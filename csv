@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+
+    <div align="center">
+        <h3><u>Enter JSON data</u></h3>
+        <div class='mydiv'>
+            <textarea id="txt" class='txtarea' rows="15" cols="100">[{"Vehicle":"BMW","Date":"30 Jul 2013 09:24 AM","Location":"Hauz Khas","Speed":42},{"Vehicle":"Honda CBR","Date":"30 Jul 2013 12:00 AM","Location":"Military Road","Speed":0},{"Vehicle":"Supra","Date":"30 Jul 2013 07:53 AM","Location":"Sec-45","Speed":58},{"Vehicle":"Land Cruiser","Date":"30 Jul 2013 09:35 AM","Location":"DLF Phase I","Speed":83}]</textarea>
+        </div>
+        <br />
+        <button class="download">Download CSV</button>
+    </div>
+
+
+
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript">
+
+
+        // 原文：javascript:void(0)
+
+
+        $(function () {
+
+            var d = [
+                { "Vehicle": "BMW", "Date": "30 Jul 2013 09:24 AM", "Location": "Hauz Khas", "Speed": 42 },
+                { "Vehicle": "Honda CBR", "Date": "30 Jul 2013 12:00 AM", "Location": "Military Road", "Speed": 0 },
+                { "Vehicle": "Supra", "Date": "30 Jul 2013 07:53 AM", "Location": "Sec-45", "Speed": 58 },
+                { "Vehicle": "Land Cruiser", "Date": "30 Jul 2013 09:35 AM", "Location": "DLF Phase I", "Speed": 83 }
+            ];
+
+
+            d = [{ "platformOrderSn": "12044000000", "orderCreateTime": "2020-09-25 13:22:29", "title": "测试0", "memberUsername": "用户0", "orderStatus": 0, "payAmount": "348.00" }, { "platformOrderSn": "12044000001", "orderCreateTime": "2020-09-25 13:22:29", "title": "测试1", "memberUsername": "用户1", "orderStatus": 0, "payAmount": "348.00" }, { "platformOrderSn": "12044000002", "orderCreateTime": "2020-09-25 13:22:29", "title": "测试2", "memberUsername": "用户2", "orderStatus": 0, "payAmount": "348.00" }, { "platformOrderSn": "12044000003", "orderCreateTime": "2020-09-25 13:22:29", "title": "测试3", "memberUsername": "用户3", "orderStatus": 0, "payAmount": "348.00" }, { "platformOrderSn": "12044000004", "orderCreateTime": "2020-09-25 13:22:29", "title": "测试4", "memberUsername": "用户4", "orderStatus": 0, "payAmount": "348.00" }];
+
+
+
+            var msieversion = function () {
+                var ua = window.navigator.userAgent;
+                var msie = ua.indexOf("MSIE ");
+                if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) // If Internet Explorer, return version number
+                {
+                    return true;
+                } else { // If another browser,
+                    return false;
+                }
+                return false;
+            };
+
+
+            var JSONToCSVConvertor = function (JSONData, ShowLabel) {
+                var arrData = typeof JSONData !== 'object' ? JSON.parse(JSONData) : JSONData;
+                var CSV = '';
+                if (ShowLabel) {
+                    var row = "";
+                    for (var index in arrData[0]) {
+                        row += index + ',';
+                    }
+                    row = row.slice(0, -1);
+                    CSV += row + '\r\n';
+                }
+                for (var i = 0; i < arrData.length; i++) {
+                    var row = "";
+                    for (var index in arrData[i]) {
+                        var arrValue = arrData[i][index] == null ? "" : '="' + arrData[i][index] + '"';
+                        row += arrValue + ',';
+                    }
+                    row.slice(0, row.length - 1);
+                    CSV += row + '\r\n';
+                }
+                if (CSV == '') {
+                    growl.error("Invalid data");
+                    return;
+                }
+                var fileName = "Result";
+                if (msieversion()) {
+                    var IEwindow = window.open();
+                    IEwindow.document.write('sep=,\r\n' + CSV);
+                    IEwindow.document.close();
+                    IEwindow.document.execCommand('SaveAs', true, fileName + ".csv");
+                    IEwindow.close();
+                } else {
+                    //var uri = 'data:application/csv;charset=utf-8,' + escape(CSV);
+                    var uri = 'data:application/csv;charset=utf-8,' + CSV;
+                    var link = document.createElement("a");
+                    link.href = uri;
+                    link.style = "visibility:hidden";
+                    link.download = fileName + ".csv";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            };
+
+
+            JSONToCSVConvertor(d, true);
+
+        });
+
+
+    </script>
+</body>
+</html>
